@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import ru.disdev.commons.Key;
 import ru.disdev.commons.Packet;
 
 import java.nio.charset.Charset;
@@ -23,6 +24,10 @@ public class PacketEncoder extends MessageToByteEncoder<Packet> {
     protected void encode(ChannelHandlerContext ctx, Packet msg, ByteBuf out) throws Exception {
         if (msg == null) return;
         Class<? extends Packet> clazz = msg.getClass();
+        Key key = clazz.getAnnotation(Key.class);
+        if (key == null) return;
+        int id = key.value();
+        writeInt(id, out);
         FieldUtils.getAllFieldsList(clazz).forEach(field -> {
             field.setAccessible(true);
             Class<?> type = field.getType();
