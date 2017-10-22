@@ -67,6 +67,12 @@ public class Client extends Transport<Client> {
         }
 
         @Override
+        public ClientBuilder workerGroupThreadCount(int count) {
+            configuration.setBossGroupThreadCount(count);
+            return this;
+        }
+
+        @Override
         protected ClientBuilder getThis() {
             return this;
         }

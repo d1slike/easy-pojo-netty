@@ -76,12 +76,6 @@ public class Server extends Transport<Server> {
         }
 
         @Override
-        public ServerBuilder workerGroupThreadCount(int count) {
-            configuration.setBossGroupThreadCount(count);
-            return this;
-        }
-
-        @Override
         protected ServerBuilder getThis() {
             return this;
         }
