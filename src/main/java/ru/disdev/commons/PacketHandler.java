@@ -3,6 +3,7 @@ package ru.disdev.commons;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import ru.disdev.commons.annotations.Key;
 
 import java.util.Map;
 import java.util.function.BiConsumer;

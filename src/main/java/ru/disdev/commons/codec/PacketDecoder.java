@@ -5,6 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import ru.disdev.commons.Packet;
+import ru.disdev.commons.annotations.Ignore;
 
 import java.nio.charset.Charset;
 import java.util.List;
@@ -37,37 +38,42 @@ public class PacketDecoder extends ReplayingDecoder<Packet> {
             Class<? extends Packet> clazz = allowedPackets.get(packetKey);
             try {
                 Packet packet = clazz.newInstance();
-                FieldUtils.getAllFieldsList(clazz).forEach(field -> {
-                    try {
-                        field.setAccessible(true);
-                        Class<?> type = field.getType();
-                        if (int.class.isAssignableFrom(type) || Integer.class.isAssignableFrom(type)) {
-                            int value = readInt(in);
-                            field.set(packet, value);
-                        } else if (String.class.isAssignableFrom(type)) {
-                            String value = readSting(in);
-                            field.set(packet, value);
-                        } else if (UUID.class.isAssignableFrom(type)) {
-                            String stringValue = readSting(in);
-                            UUID value = UUID.fromString(stringValue);
-                            field.set(packet, value);
-                        } else if (type.isEnum()) {
-                            String stringValue = readSting(in);
-                            Stream.of(type.getEnumConstants())
-                                    .filter(v -> v.toString().equals(stringValue))
-                                    .findFirst()
-                                    .ifPresent(v -> {
-                                        try {
-                                            field.set(packet, stringValue);
-                                        } catch (IllegalAccessException ignored) {
+                FieldUtils.getAllFieldsList(clazz).stream()
+                        .filter(field -> {
+                            Ignore ignore = field.getAnnotation(Ignore.class);
+                            return ignore == null || !ignore.read();
+                        })
+                        .forEach(field -> {
+                            try {
+                                field.setAccessible(true);
+                                Class<?> type = field.getType();
+                                if (int.class.isAssignableFrom(type) || Integer.class.isAssignableFrom(type)) {
+                                    int value = readInt(in);
+                                    field.set(packet, value);
+                                } else if (String.class.isAssignableFrom(type)) {
+                                    String value = readSting(in);
+                                    field.set(packet, value);
+                                } else if (UUID.class.isAssignableFrom(type)) {
+                                    String stringValue = readSting(in);
+                                    UUID value = UUID.fromString(stringValue);
+                                    field.set(packet, value);
+                                } else if (type.isEnum()) {
+                                    String stringValue = readSting(in);
+                                    Stream.of(type.getEnumConstants())
+                                            .filter(v -> v.toString().equals(stringValue))
+                                            .findFirst()
+                                            .ifPresent(v -> {
+                                                try {
+                                                    field.set(packet, stringValue);
+                                                } catch (IllegalAccessException ignored) {
 
-                                        }
-                                    });
-                        }
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                });
+                                                }
+                                            });
+                                }
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        });
                 out.add(packet);
             } catch (Exception ex) {
                 ex.printStackTrace();

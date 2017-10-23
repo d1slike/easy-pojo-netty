@@ -1,8 +1,8 @@
 package ru.disdev.commons.transport;
 
 import io.netty.channel.Channel;
-import ru.disdev.commons.Key;
 import ru.disdev.commons.Packet;
+import ru.disdev.commons.annotations.Key;
 import ru.disdev.commons.configuration.Configuration;
 import ru.disdev.commons.configuration.Handlers;
 
