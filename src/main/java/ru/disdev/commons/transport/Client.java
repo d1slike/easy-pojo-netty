@@ -18,7 +18,7 @@ public class Client extends Transport<Client> {
 
     private Client(Configuration configuration, Handlers handlers) {
         super(configuration, handlers);
-        group = new NioEventLoopGroup(configuration.getBossGroupThreadCount());
+        group = new NioEventLoopGroup(configuration.getBossGroupThreadCount(), threadFactory());
     }
 
     @Override
@@ -57,6 +57,12 @@ public class Client extends Transport<Client> {
     @Override
     protected Client getThis() {
         return this;
+    }
+
+    public static ClientBuilder builder() {
+        return new ClientBuilder()
+                .daemonThreads(true)
+                .workerGroupThreadCount(1);
     }
 
     public static class ClientBuilder extends TransportBuilder<Client, ClientBuilder> {

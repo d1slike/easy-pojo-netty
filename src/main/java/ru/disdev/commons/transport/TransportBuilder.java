@@ -73,4 +73,9 @@ public abstract class TransportBuilder<T extends Transport, B> {
         configuration.setStringCharset(charset);
         return getThis();
     }
+
+    public B daemonThreads(boolean value) {
+        configuration.setDaemonThreads(value);
+        return getThis();
+    }
 }

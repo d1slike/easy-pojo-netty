@@ -8,6 +8,7 @@ import ru.disdev.commons.configuration.Handlers;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadFactory;
 import java.util.function.BiConsumer;
 
 public abstract class Transport<C> {
@@ -53,6 +54,14 @@ public abstract class Transport<C> {
         allowedPackets.clear();
         handlersMap.clear();
         return getThis();
+    }
+
+    protected ThreadFactory threadFactory() {
+        return r -> {
+            Thread thread = new Thread(r);
+            thread.setDaemon(configuration.isDaemonThreads());
+            return thread;
+        };
     }
 
     public abstract void shutdown();

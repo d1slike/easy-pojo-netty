@@ -12,6 +12,8 @@ import ru.disdev.commons.codec.PacketEncoder;
 import ru.disdev.commons.configuration.Configuration;
 import ru.disdev.commons.configuration.Handlers;
 
+import java.util.concurrent.ThreadFactory;
+
 public class Server extends Transport<Server> {
 
     protected final EventLoopGroup bossGroup;
@@ -19,8 +21,9 @@ public class Server extends Transport<Server> {
 
     private Server(Configuration configuration, Handlers handlers) {
         super(configuration, handlers);
-        bossGroup = new NioEventLoopGroup(configuration.getBossGroupThreadCount());
-        workerGroup = new NioEventLoopGroup(configuration.getWorkerGroupThreadCount());
+        ThreadFactory threadFactory = threadFactory();
+        bossGroup = new NioEventLoopGroup(configuration.getBossGroupThreadCount(), threadFactory);
+        workerGroup = new NioEventLoopGroup(configuration.getWorkerGroupThreadCount(), threadFactory);
     }
 
     @Override

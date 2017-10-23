@@ -9,6 +9,7 @@ public class Configuration {
     private int port = 8080;
     private Charset stringCharset = Charset.forName("UTF-8");
     private boolean useLE = false;
+    private boolean daemonThreads = false;
 
     public int getBossGroupThreadCount() {
         return bossGroupThreadCount;
@@ -56,5 +57,13 @@ public class Configuration {
 
     public void setUseLE(boolean useLE) {
         this.useLE = useLE;
+    }
+
+    public boolean isDaemonThreads() {
+        return daemonThreads;
+    }
+
+    public void setDaemonThreads(boolean daemonThreads) {
+        this.daemonThreads = daemonThreads;
     }
 }
